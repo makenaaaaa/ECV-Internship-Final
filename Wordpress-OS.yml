@@ -1,0 +1,117 @@
+- name: Install and configure WordPress
+  hosts: all
+  become: true
+  vars:
+    db_name: wordpress_db
+    db_user: wp_user
+    db_password: wp_password
+    wp_admin_user: admin
+    wp_admin_password: admin_password
+    wp_site_title: "Example WordPress Site"
+    wp_site_url: "example.com"
+    httpd_packages:
+      - httpd
+      - mod_ssl
+    php_packages:
+      - php
+      - php-mysqlnd
+      - php-fpm
+      - php-gd
+      - php-json
+      - php-mbstring
+      - php-opcache
+      - php-pdo
+      - php-pecl-apcu
+      - php-pecl-imagick
+      - php-pecl-zip
+    mariadb_packages:
+      - mariadb-server
+      - mariadb
+  tasks:
+
+    - name: Install packages required for WordPress
+      package:
+        name:
+        - apache2
+        - mysql-server
+        - php-mysql
+        - php
+        - libapache2-mod-php
+        - python3-mysqldb
+        state: present
+      when: ansible_os_family == 'Debian'
+
+
+    - name: Start and enable Apache service
+      service:
+        name: apache2
+        state: started
+        enabled: true
+      when: ansible_os_family == 'Debian'
+
+    - name: Start and enable MySQL service
+      service:
+        name: mysql
+        state: started
+        enabled: true
+      when: ansible_os_family == 'Debian'
+      
+    - name: Create WordPress database user
+      mysql_user:
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        priv: "{{ db_name }}.*:ALL"
+        state: present
+      when: ansible_os_family == 'Debian'
+      
+    - name: Create WordPress database
+      mysql_db:
+        name: "{{ db_name }}"
+        state: present
+      when: ansible_os_family == 'Debian'
+
+    - name: Create WordPress directory
+      file:
+        path: /var/www/html/wordpress
+        state: directory
+    
+      
+    - name: Download and extract WordPress core files
+      get_url:
+        url: "https://wordpress.org/latest.tar.gz"
+        dest: /tmp/wordpress.tar.gz
+      register: download_wordpress
+
+    - name: Extract WordPress core files
+      command: "tar xzf /tmp/wordpress.tar.gz --strip-components=1 -C/var/www/html/wordpress"
+      args:
+        warn: false
+      when: download_wordpress is succeeded
+      
+    - name: Extract WordPress files
+      command: tar xzf /tmp/wordpress.tar.gz --strip-components=1 -C /var/www/html/wordpress
+
+      
+    - name: Update PHP
+      apt:
+        name: php
+        state: latest
+
+
+    - name: Set ownership of WordPress directory  
+      file:  
+
+        path: /var/www/html/wordpress
+        owner: www-data
+        group: www-data
+        recurse: true
+  handlers:
+    - name: enable apache site
+      command: apache2ctl graceful
+      notify:
+        - reload apache
+    - name: Restart Apache service
+      service:
+        name: apache2
+        state: restarted
+      when: ansible_os_family == 'Debian'
