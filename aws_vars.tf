@@ -12,32 +12,12 @@ variable "cidr_all" {
 
 // Set rds username
 variable "rds_username" {
-  type    = string
-  default = ""
+  type = string
 }
 
 // Set rds password
 variable "rds_password" {
-  type    = string
-  default = ""
-}
-
-// Set resource tag
-variable "project" {
-  type    = string
-  default = "tfdeploy"
-}
-
-// Set resource tag
-variable "state" {
-  type    = bool
-  default = true
-}
-
-// Set resource tag
-variable "prefix" {
-  type    = string
-  default = "task-2"
+  type = string
 }
 
 // Set encrypt key
@@ -58,7 +38,7 @@ variable "type" {
   default = "t2.micro"
 }
 
-
+// route 53 zone
 variable "zone" {
   type    = string
   default = "internship.msppoc.com"

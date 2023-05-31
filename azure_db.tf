@@ -1,4 +1,4 @@
-/*
+// Create mysql server
 resource "azurerm_mysql_server" "db" {
   name                = "final-dbserver"
   location            = "eastus"
@@ -19,5 +19,3 @@ resource "azurerm_mysql_server" "db" {
   ssl_enforcement_enabled           = true
   ssl_minimal_tls_version_enforced  = "TLS1_2"
 }
-
-*/

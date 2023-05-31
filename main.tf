@@ -18,5 +18,5 @@ provider "aws" {
 }
 
 data "azurerm_resource_group" "msp" {
-  name = "MSP"
+  name = var.resource_group
 }

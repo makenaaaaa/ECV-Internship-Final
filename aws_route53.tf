@@ -2,12 +2,11 @@ data "aws_route53_zone" "example" {
   name = "internship.msppoc.com"
 }
 
+// Primary record
 resource "aws_route53_record" "www1" {
   zone_id = data.aws_route53_zone.example.zone_id
   name    = "final.internship.msppoc.com"
   type    = "A"
-  // must have
-  // ttl     = "60"
 
   failover_routing_policy {
     type = "PRIMARY"
@@ -40,6 +39,7 @@ resource "aws_route53_health_check" "example1" {
   }
 }
 
+// Secondary record
 resource "aws_route53_record" "www2" {
   zone_id = data.aws_route53_zone.example.zone_id
   name    = "final.internship.msppoc.com"

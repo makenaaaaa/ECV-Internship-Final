@@ -30,6 +30,11 @@ resource "aws_lb_target_group_attachment" "example" {
   target_id        = aws_instance.web.id
   port             = 80
 }
+resource "aws_lb_target_group_attachment" "example2" {
+  target_group_arn = aws_lb_target_group.example.arn
+  target_id        = aws_instance.web2.id
+  port             = 80
+}
 
 // Attach ALB with target group
 resource "aws_lb_listener" "example" {
